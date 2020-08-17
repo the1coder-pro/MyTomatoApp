@@ -388,11 +388,7 @@ class _StudyPageState extends State<StudyPage> {
                 SizedBox(width: 40),
                 IconButton(
                   icon: Icon(Icons.visibility),
-                  onPressed: () {
-                    // setState(() {
-                    //   studyText = listOfWords[clicks].join(" ");
-                    // });
-                  },
+                  onPressed: () {},
                   iconSize: 50,
                 )
               ],
