@@ -37,13 +37,14 @@ double toolBarHeight = 70;
 TextEditingController field = TextEditingController();
 var theContent = '';
 var listOfSentences;
+double textHeight = 0;
 
-class ThisSlider extends StatefulWidget {
+class WordRepeatSlider extends StatefulWidget {
   @override
-  _ThisSliderState createState() => _ThisSliderState();
+  _WordRepeatSliderState createState() => _WordRepeatSliderState();
 }
 
-class _ThisSliderState extends State<ThisSlider> {
+class _WordRepeatSliderState extends State<WordRepeatSlider> {
   @override
   Widget build(BuildContext context) {
     return Slider(
@@ -57,6 +58,30 @@ class _ThisSliderState extends State<ThisSlider> {
         onChanged: (double value) {
           setState(() {
             repeatWords = value.toInt();
+          });
+        });
+  }
+}
+
+class TextHeightSlider extends StatefulWidget {
+  @override
+  _TextHeightSliderState createState() => _TextHeightSliderState();
+}
+
+class _TextHeightSliderState extends State<TextHeightSlider> {
+  @override
+  Widget build(BuildContext context) {
+    return Slider(
+        inactiveColor: Colors.grey,
+        activeColor: Colors.black,
+        value: textHeight,
+        min: 0,
+        max: 5,
+        divisions: 5,
+        label: '${textHeight.toInt()}',
+        onChanged: (double value) {
+          setState(() {
+            textHeight = value;
           });
         });
   }
@@ -86,18 +111,22 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         body: ListView(
           children: [
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Text("English"),
+            //     // TODO Fixing the Switch
+            //     Switch(value: false, onChanged: (value) => value),
+            //     Text("Arabic"),
+            //   ],
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("English"),
-                // TODO Fixing the Switch
-                Switch(value: false, onChanged: (value) => value),
-                Text("Arabic"),
-              ],
+              children: [Text("Word Repeat"), WordRepeatSlider()],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text("Word Repeat"), ThisSlider()],
+              children: [Text("Text Height"), TextHeightSlider()],
             )
           ],
         ));
@@ -108,8 +137,18 @@ void submitfunction(BuildContext context) {
   Navigator.pushReplacementNamed(context, '/study');
   theContent = field.text;
   // theContent = theContent.toString().split("...").join(" ").split("  ")[0];
-  listOfSentences = theContent.toString().split("...").join(" ").split("  ");
-  print(listOfSentences.length);
+  var listOfSpliters = ["...", " *** ", ",", "،"];
+  for (var spliter in listOfSpliters) {
+    if (theContent.trim().contains(spliter)) {
+      listOfSentences = theContent
+          .toString()
+          .trim()
+          .split(spliter)
+          .join(" ")
+          .trim()
+          .split("  ");
+    }
+  }
 
   // var theSpliters = {
   //   "threeDots": "...",
@@ -278,10 +317,32 @@ class _StudyPageState extends State<StudyPage> {
   var studyText = listOfSentences[0];
   int clicks = 1;
   int repeatWordsCounter = repeatWords;
+  var listOfWords;
 
   void splitSentences(int sentenceNumber) {
-    var listOfWords = listOfSentences[sentenceNumber].split(" ");
-    print(listOfWords);
+    var listOfSpliters = ["...", " *** ", ",", "،"];
+    for (var spliter in listOfSpliters) {
+      if (theContent.trim().contains(spliter)) {
+        listOfSentences = theContent
+            .toString()
+            .trim()
+            .split(spliter)
+            .join(" ")
+            .trim()
+            .split("  ");
+      }
+    }
+    listOfWords = [];
+    var words = listOfSentences[sentenceNumber].toString().split(" ");
+    for (var word in words) {
+      listOfWords.add(word);
+    }
+  }
+
+  void hideWords(int sentenceNumber) {
+    splitSentences(sentenceNumber);
+    print("words in list : $listOfWords");
+    print("words " + listOfWords.join(" ").toString());
     var hideWordNumber = Random().nextInt(listOfWords.length);
     studyText = listOfWords
         .join(" ")
@@ -300,7 +361,7 @@ class _StudyPageState extends State<StudyPage> {
         minClicks = 2;
       } else {
         if (repeatWordsCounter == 1) {
-          splitSentences(clicks);
+          hideWords(clicks);
           repeatWordsCounter = repeatWords;
           clicks++;
         } else {
@@ -308,7 +369,7 @@ class _StudyPageState extends State<StudyPage> {
             minClicks = 2;
             print("minCLicks done");
           } else {
-            splitSentences(minClicks);
+            hideWords(minClicks);
           }
           repeatWordsCounter--;
         }
@@ -352,7 +413,7 @@ class _StudyPageState extends State<StudyPage> {
                 height: 300,
                 child: Text(
                   '$studyText',
-                  style: TextStyle(fontSize: 40),
+                  style: TextStyle(fontSize: 40, height: textHeight),
                   maxLines: 5,
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.center,
@@ -388,7 +449,11 @@ class _StudyPageState extends State<StudyPage> {
                 SizedBox(width: 40),
                 IconButton(
                   icon: Icon(Icons.visibility),
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      studyText = listOfWords.join(" ").toString();
+                    });
+                  },
                   iconSize: 50,
                 )
               ],
