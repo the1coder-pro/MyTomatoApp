@@ -37,7 +37,7 @@ double toolBarHeight = 70;
 TextEditingController field = TextEditingController();
 var theContent = '';
 var listOfSentences;
-double textHeight = 0;
+double textHeight = 1;
 
 class WordRepeatSlider extends StatefulWidget {
   @override
@@ -75,9 +75,9 @@ class _TextHeightSliderState extends State<TextHeightSlider> {
         inactiveColor: Colors.grey,
         activeColor: Colors.black,
         value: textHeight,
-        min: 0,
+        min: 1,
         max: 5,
-        divisions: 5,
+        divisions: 4,
         label: '${textHeight.toInt()}',
         onChanged: (double value) {
           setState(() {
