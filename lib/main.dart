@@ -2,13 +2,25 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'theme.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider<ThemeNotifier>(
+        create: (_) => ThemeNotifier(lightTheme), child: TheMaterialApp());
+  }
+}
+
+class TheMaterialApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
+      theme: theme.getTheme(),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
@@ -39,6 +51,66 @@ var theContent = '';
 var listOfSentences;
 double textHeight = 1;
 
+//Theme Toggle Buttons and themeChanger Function
+void onThemeChanged(int value, ThemeNotifier themeNotifier) {
+  if (value == 0) {
+    themeNotifier.setTheme(lightTheme);
+  }
+  if (value == 1) {
+    themeNotifier.setTheme(amberTheme);
+  }
+  if (value == 2) {
+    themeNotifier.setTheme(darkTheme);
+  }
+}
+
+class ThemeController extends StatefulWidget {
+  @override
+  _ThemeControllerState createState() => _ThemeControllerState();
+}
+
+class _ThemeControllerState extends State<ThemeController> {
+  var isSelected = <bool>[false, false, false];
+
+  @override
+  Widget build(BuildContext context) {
+    ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
+    return ToggleButtons(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("White", textAlign: TextAlign.center),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Amber", textAlign: TextAlign.center),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Black", textAlign: TextAlign.center),
+        ),
+      ],
+      onPressed: (int index) {
+        setState(() {
+          for (int buttonIndex = 0;
+              buttonIndex < isSelected.length;
+              buttonIndex++) {
+            if (buttonIndex == index) {
+              isSelected[buttonIndex] = true;
+            } else {
+              isSelected[buttonIndex] = false;
+            }
+          }
+
+          onThemeChanged(index, themeNotifier);
+          print(index);
+        });
+      },
+      isSelected: isSelected,
+    );
+  }
+}
+
 class WordRepeatSlider extends StatefulWidget {
   @override
   _WordRepeatSliderState createState() => _WordRepeatSliderState();
@@ -48,8 +120,8 @@ class _WordRepeatSliderState extends State<WordRepeatSlider> {
   @override
   Widget build(BuildContext context) {
     return Slider(
-        inactiveColor: Colors.grey,
-        activeColor: Colors.black,
+        inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
+        activeColor: Theme.of(context).sliderTheme.activeTrackColor,
         value: repeatWords.toDouble(),
         min: 3,
         max: 10,
@@ -72,8 +144,8 @@ class _TextHeightSliderState extends State<TextHeightSlider> {
   @override
   Widget build(BuildContext context) {
     return Slider(
-        inactiveColor: Colors.grey,
-        activeColor: Colors.black,
+        inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
+        activeColor: Theme.of(context).sliderTheme.activeTrackColor,
         value: textHeight,
         min: 1,
         max: 5,
@@ -100,12 +172,15 @@ class _SettingsPageState extends State<SettingsPage> {
           leading: IconButton(
             icon: Icon(Icons.close),
             iconSize: 30,
-            color: Colors.black,
+            color: Theme.of(context).appBarTheme.iconTheme.color,
             onPressed: () => Navigator.pop(context),
           ),
           centerTitle: true,
-          title: Text("Settings", style: TextStyle(color: Colors.black)),
-          backgroundColor: Colors.white,
+          title: Text("Settings",
+              style: TextStyle(
+                  color:
+                      Theme.of(context).appBarTheme.textTheme.bodyText1.color,
+                  backgroundColor: Theme.of(context).appBarTheme.color)),
           elevation: 0.5,
           toolbarHeight: 60,
         ),
@@ -122,11 +197,30 @@ class _SettingsPageState extends State<SettingsPage> {
             // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text("Word Repeat"), WordRepeatSlider()],
+              children: [
+                Text("Word Repeat",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color)),
+                WordRepeatSlider()
+              ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text("Text Height"), TextHeightSlider()],
+              children: [
+                Text("Text Height",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color)),
+                TextHeightSlider()
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Theme ",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color)),
+                ThemeController()
+              ],
             )
           ],
         ));
@@ -180,9 +274,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title:
-              Text("Home", style: TextStyle(color: Colors.black, fontSize: 25)),
-          backgroundColor: Colors.white,
+          title: Text("Home",
+              style: TextStyle(
+                  color:
+                      Theme.of(context).appBarTheme.textTheme.bodyText1.color,
+                  fontSize: 25)),
+          backgroundColor: Theme.of(context).appBarTheme.color,
           elevation: 0.5,
           toolbarHeight: toolBarHeight,
           actions: [
@@ -196,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                       return SettingsPage();
                     });
               },
-              color: Colors.black,
+              color: Theme.of(context).appBarTheme.iconTheme.color,
               padding: EdgeInsets.only(right: 20),
             )
           ],
@@ -206,15 +303,15 @@ class _HomePageState extends State<HomePage> {
           width: 150,
           child: FloatingActionButton.extended(
             tooltip: "Study",
-            backgroundColor: Colors.black,
+            backgroundColor: Theme.of(context).buttonColor,
             onPressed: () => submitfunction(context),
             label: Text(
               "Study",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).textTheme.button.color),
             ),
             icon: Icon(
               Icons.school,
-              color: Colors.white,
+              color: Theme.of(context).textTheme.button.color,
               size: 30,
             ),
           ),
@@ -229,12 +326,15 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.info_outline),
                   onPressed: () {}, //TODO we need a Info Page
                   iconSize: 30,
+                  color: Theme.of(context).textTheme.bodyText1.color,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 6.0),
                   child: Text(
                     "Paste What Your Text And Press Submit",
-                    style: TextStyle(fontSize: 17),
+                    style: TextStyle(
+                        fontSize: 17,
+                        color: Theme.of(context).textTheme.bodyText1.color),
                   ),
                 ),
               ],
@@ -244,14 +344,17 @@ class _HomePageState extends State<HomePage> {
                 textDirection: TextDirection.rtl,
                 controller: field,
                 maxLines: 18,
-                style: TextStyle(color: Colors.black, fontSize: 25),
-                cursorColor: Colors.black,
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyText1.color,
+                    fontSize: 25),
+                cursorColor: Theme.of(context).textSelectionColor,
                 decoration: InputDecoration(
-                  focusColor: Colors.black,
-                  labelStyle: TextStyle(color: Colors.black),
-                  hoverColor: Colors.black,
+                  focusColor: Theme.of(context).focusColor,
+                  labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+                  hoverColor: Theme.of(context).hoverColor,
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
                   ),
                 ),
               ),
@@ -387,8 +490,11 @@ class _StudyPageState extends State<StudyPage> {
         appBar: AppBar(
           centerTitle: true,
           title: Text("Study",
-              style: TextStyle(color: Colors.black, fontSize: 25)),
-          backgroundColor: Colors.white,
+              style: TextStyle(
+                  color:
+                      Theme.of(context).appBarTheme.textTheme.bodyText1.color,
+                  fontSize: 25)),
+          backgroundColor: Theme.of(context).appBarTheme.color,
           elevation: 0.5,
           toolbarHeight: toolBarHeight,
         ),
@@ -397,11 +503,11 @@ class _StudyPageState extends State<StudyPage> {
             width: 70,
             child: FloatingActionButton(
               tooltip: "Edit",
-              backgroundColor: Colors.black,
+              backgroundColor: Theme.of(context).buttonColor,
               onPressed: () => Navigator.pushReplacementNamed(context, '/'),
               child: Icon(
                 Icons.edit,
-                color: Colors.white,
+                color: Theme.of(context).textTheme.button.color,
                 size: 30,
               ),
             )),
@@ -413,7 +519,10 @@ class _StudyPageState extends State<StudyPage> {
                 height: 300,
                 child: Text(
                   '$studyText',
-                  style: TextStyle(fontSize: 40, height: textHeight),
+                  style: TextStyle(
+                      fontSize: 40,
+                      height: textHeight,
+                      color: Theme.of(context).textTheme.bodyText1.color),
                   maxLines: 5,
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.center,
@@ -434,13 +543,15 @@ class _StudyPageState extends State<StudyPage> {
                   child: FlatButton(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
-                      color: Colors.black,
+                      color: Theme.of(context).buttonColor,
                       onPressed: () => studyBtnfunction(),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Study",
-                          style: TextStyle(fontSize: 30, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 30,
+                              color: Theme.of(context).textTheme.button.color),
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.rtl,
                         ),
@@ -449,6 +560,8 @@ class _StudyPageState extends State<StudyPage> {
                 SizedBox(width: 40),
                 IconButton(
                   icon: Icon(Icons.visibility),
+                  color: Theme.of(context).primaryColor,
+                  splashColor: Theme.of(context).buttonColor,
                   onPressed: () {
                     setState(() {
                       studyText = listOfWords.join(" ").toString();
@@ -463,7 +576,8 @@ class _StudyPageState extends State<StudyPage> {
               child: Center(
                   child: Text(
                 "$repeatWordsCounter",
-                style: TextStyle(fontSize: 90),
+                style: TextStyle(
+                    fontSize: 90, color: Theme.of(context).primaryColor),
               )),
             )
           ],
