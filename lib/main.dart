@@ -15,18 +15,31 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class MyLangauge with ChangeNotifier {
+  bool _isEnglish = false;
+  bool get langaugeSetter => _isEnglish;
+
+  set langaugeSetter(bool newValue) {
+    _isEnglish = newValue;
+    notifyListeners();
+  }
+}
+
 class TheMaterialApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeNotifier>(context);
-    return MaterialApp(
-      theme: theme.getTheme(),
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => HomePage(),
-        '/study': (context) => StudyPage(),
-      },
+    return ChangeNotifierProvider(
+      create: (context) => MyLangauge(),
+      child: MaterialApp(
+        theme: theme.getTheme(),
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        routes: {
+          '/': (context) => HomePage(),
+          '/study': (context) => StudyPage(),
+        },
+      ),
     );
   }
 }
@@ -75,19 +88,24 @@ class _ThemeControllerState extends State<ThemeController> {
   @override
   Widget build(BuildContext context) {
     ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
+    final myLangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = myLangauge._isEnglish;
     return ToggleButtons(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text("White", textAlign: TextAlign.center),
+          child: Text(isLangaugeEnglish ? "White" : "ابيض",
+              textAlign: TextAlign.center),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text("Amber", textAlign: TextAlign.center),
+          child: Text(isLangaugeEnglish ? "Amber" : "بني",
+              textAlign: TextAlign.center),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text("Black", textAlign: TextAlign.center),
+          child: Text(isLangaugeEnglish ? "Black" : "اسود",
+              textAlign: TextAlign.center),
         ),
       ],
       onPressed: (int index) {
@@ -167,6 +185,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
+    final mylangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = mylangauge._isEnglish;
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -176,7 +196,7 @@ class _SettingsPageState extends State<SettingsPage> {
             onPressed: () => Navigator.pop(context),
           ),
           centerTitle: true,
-          title: Text("Settings",
+          title: Text(isLangaugeEnglish ? "Settings" : "الاعدادات",
               style: TextStyle(
                   color:
                       Theme.of(context).appBarTheme.textTheme.bodyText1.color,
@@ -186,19 +206,27 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         body: ListView(
           children: [
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Text("English"),
-            //     // TODO Fixing the Switch
-            //     Switch(value: false, onChanged: (value) => value),
-            //     Text("Arabic"),
-            //   ],
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Word Repeat",
+                Text(isLangaugeEnglish ? "Arabic" : "عربي",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color)),
+                // TODO Fixing the Switch
+                Switch(
+                    value: mylangauge._isEnglish,
+                    onChanged: (value) => mylangauge.langaugeSetter = value),
+                Text(isLangaugeEnglish ? "English" : "انجليزي",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              textDirection:
+                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
+              children: [
+                Text(isLangaugeEnglish ? "Repeat Words" : "تكرار الكلمات",
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color)),
                 WordRepeatSlider()
@@ -206,8 +234,10 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              textDirection:
+                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
               children: [
-                Text("Text Height",
+                Text(isLangaugeEnglish ? "Text Height" : "حجم الاسطر",
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color)),
                 TextHeightSlider()
@@ -215,8 +245,10 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              textDirection:
+                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
               children: [
-                Text("Theme ",
+                Text(isLangaugeEnglish ? "Theme " : "   المظهر",
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color)),
                 ThemeController()
@@ -227,10 +259,40 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-void submitfunction(BuildContext context) {
-  Navigator.pushReplacementNamed(context, '/study');
+Future showErrorAlert(BuildContext context, bool langaugeValue) {
+  return showDialog(
+      context: context,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          CircleAvatar(
+            child: Icon(Icons.priority_high),
+            backgroundColor: Colors.red[300],
+            foregroundColor: Colors.white,
+          ),
+          SizedBox(width: 30),
+          Text(
+            langaugeValue ? "Error" : "خطأ",
+            style: TextStyle(
+                fontSize: 30,
+                color: Theme.of(context).textTheme.bodyText1.color),
+          )
+        ]),
+        content: Text(
+            langaugeValue
+                ? "No Text or Your Text is less then a sentence."
+                : ".لا يوجد محتوى او انه اقل من جملة",
+            style: TextStyle(
+                fontSize: 20,
+                color: Theme.of(context).textTheme.bodyText1.color)),
+      ));
+}
+
+void submitfunction(BuildContext context, langaugeValue) {
+  bool isEnglishLangauge = langaugeValue;
+
   theContent = field.text;
-  // theContent = theContent.toString().split("...").join(" ").split("  ")[0];
+
   var listOfSpliters = ["...", " *** ", ",", "،"];
   for (var spliter in listOfSpliters) {
     if (theContent.trim().contains(spliter)) {
@@ -243,22 +305,11 @@ void submitfunction(BuildContext context) {
           .split("  ");
     }
   }
-
-  // var theSpliters = {
-  //   "threeDots": "...",
-  //   "threeStars": "***",
-  //   "Arabiccomma": "،",
-  //   "comma": ","
-  // };
-  // String spliter;
-  // if (theContent.contains("...")) {
-  //   spliter = "...";
-  //   print(theContent.toString().split(spliter).join(" ").split("  "));
-  //   theContent = theContent.toString().split(spliter).join(" ").split("  ")[0];
-  // } else {
-  //   //TODO Theres No Dialog
-  //   print("No Text");
-  // }
+  if (listOfSentences == null) {
+    showErrorAlert(context, isEnglishLangauge);
+  } else {
+    Navigator.pushReplacementNamed(context, '/study');
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -271,10 +322,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final myLangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = myLangauge._isEnglish;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Home",
+          title: Text(isLangaugeEnglish ? "Home" : "رئيسية",
               style: TextStyle(
                   color:
                       Theme.of(context).appBarTheme.textTheme.bodyText1.color,
@@ -302,17 +355,27 @@ class _HomePageState extends State<HomePage> {
           height: 70,
           width: 150,
           child: FloatingActionButton.extended(
-            tooltip: "Study",
+            tooltip: isLangaugeEnglish ? "Study" : "ادرس",
             backgroundColor: Theme.of(context).buttonColor,
-            onPressed: () => submitfunction(context),
+            onPressed: () {
+              if (field.text.length == 0) {
+                showErrorAlert(context, isLangaugeEnglish);
+              } else {
+                submitfunction(context, isLangaugeEnglish);
+              }
+            },
             label: Text(
-              "Study",
+              isLangaugeEnglish ? "Study" : "ادرس",
+              textDirection:
+                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
               style: TextStyle(color: Theme.of(context).textTheme.button.color),
             ),
             icon: Icon(
               Icons.school,
               color: Theme.of(context).textTheme.button.color,
               size: 30,
+              textDirection:
+                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
             ),
           ),
         ),
@@ -331,7 +394,9 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 6.0),
                   child: Text(
-                    "Paste What Your Text And Press Submit",
+                    isLangaugeEnglish
+                        ? "Paste What Your Text And Press Study"
+                        : "الصق ما تريد حفظه واضغط زر ادرس",
                     style: TextStyle(
                         fontSize: 17,
                         color: Theme.of(context).textTheme.bodyText1.color),
@@ -341,7 +406,8 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
               child: TextFormField(
-                textDirection: TextDirection.rtl,
+                textDirection:
+                    isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
                 controller: field,
                 maxLines: 18,
                 style: TextStyle(
@@ -420,7 +486,7 @@ class _StudyPageState extends State<StudyPage> {
   var studyText = listOfSentences[0];
   int clicks = 1;
   int repeatWordsCounter = repeatWords;
-  var listOfWords;
+  List listOfWords;
 
   void splitSentences(int sentenceNumber) {
     var listOfSpliters = ["...", " *** ", ",", "،"];
@@ -438,7 +504,9 @@ class _StudyPageState extends State<StudyPage> {
     listOfWords = [];
     var words = listOfSentences[sentenceNumber].toString().split(" ");
     for (var word in words) {
-      listOfWords.add(word);
+      if (word != " ") {
+        listOfWords.add(word);
+      }
     }
   }
 
@@ -481,15 +549,16 @@ class _StudyPageState extends State<StudyPage> {
       print("$repeatWords : $repeatWordsCounter");
       print(clicks);
     });
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
+    final mylangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = mylangauge._isEnglish;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Study",
+          title: Text(isLangaugeEnglish ? "Study" : "ادرس",
               style: TextStyle(
                   color:
                       Theme.of(context).appBarTheme.textTheme.bodyText1.color,
@@ -502,7 +571,7 @@ class _StudyPageState extends State<StudyPage> {
             height: 70,
             width: 70,
             child: FloatingActionButton(
-              tooltip: "Edit",
+              tooltip: isLangaugeEnglish ? "Edit" : "تعديل",
               backgroundColor: Theme.of(context).buttonColor,
               onPressed: () => Navigator.pushReplacementNamed(context, '/'),
               child: Icon(
@@ -544,11 +613,13 @@ class _StudyPageState extends State<StudyPage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       color: Theme.of(context).buttonColor,
-                      onPressed: () => studyBtnfunction(),
+                      onPressed: () {
+                        studyBtnfunction();
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "Study",
+                          isLangaugeEnglish ? "Study" : "ادرس",
                           style: TextStyle(
                               fontSize: 30,
                               color: Theme.of(context).textTheme.button.color),
@@ -562,6 +633,9 @@ class _StudyPageState extends State<StudyPage> {
                   icon: Icon(Icons.visibility),
                   color: Theme.of(context).primaryColor,
                   splashColor: Theme.of(context).buttonColor,
+                  tooltip: isLangaugeEnglish
+                      ? "Show the hidden Word"
+                      : "اظهار الكلمة المخفية",
                   onPressed: () {
                     setState(() {
                       studyText = listOfWords.join(" ").toString();
