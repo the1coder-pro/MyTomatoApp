@@ -41,26 +41,26 @@ final lightTheme = ThemeData(
         valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])));
 
 final amberTheme = ThemeData(
-    scaffoldBackgroundColor: Color(0xFFDCC1A7),
-    indicatorColor: Color(0xFF5b3f36),
-    textSelectionColor: Color(0xFF896a60),
-    textSelectionHandleColor: Color(0xFF896a60),
-    primaryTextTheme: TextTheme(bodyText1: TextStyle(color: Color(0xFF5b3f36))),
-    primaryColor: Color(0xFF896a60),
+    scaffoldBackgroundColor: Color(0xFFffffe4),
+    indicatorColor: Color(0xFF341c13),
+    textSelectionColor: Color(0xFFffe0b2),
+    textSelectionHandleColor: Color(0xFFffe0b2),
+    primaryTextTheme: TextTheme(bodyText1: TextStyle(color: Color(0xFF341c13))),
+    primaryColor: Color(0xFFffe0b2),
     dialogTheme: DialogTheme(
         backgroundColor: Color(0xFFDCC1A7),
-        contentTextStyle: TextStyle(color: Color(0xFF5b3f36))),
+        contentTextStyle: TextStyle(color: Color(0xFF341c13))),
     tabBarTheme: TabBarTheme(labelColor: Color(0xFFDCC1A7)),
     appBarTheme: AppBarTheme(
-        color: Color(0xFF896a60),
-        textTheme: TextTheme(bodyText1: TextStyle(color: Color(0xFFDCC1A7))),
-        iconTheme: IconThemeData(color: Color(0xFFDCC1A7))),
+        color: Color(0xFF5f4339),
+        textTheme: TextTheme(bodyText1: TextStyle(color: Color(0xFFffffe4))),
+        iconTheme: IconThemeData(color: Color(0xFFffffe4))),
     textTheme: TextTheme(
-        bodyText1: TextStyle(color: Color(0xFF5b3f36)),
+        bodyText1: TextStyle(color: Color(0xFF341c13)),
         bodyText2: TextStyle(fontSize: 20),
-        button: TextStyle(color: Color(0xFFDCC1A7))),
-    snackBarTheme: SnackBarThemeData(backgroundColor: Color(0xFF896a60)),
-    buttonColor: Color(0xFF5b3f36),
+        button: TextStyle(color: Color(0xFFffffe4))),
+    snackBarTheme: SnackBarThemeData(backgroundColor: Color(0xFFffe0b2)),
+    buttonColor: Color(0xFF5f4339),
     buttonTheme: ButtonThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
     bottomSheetTheme: BottomSheetThemeData(
@@ -69,14 +69,14 @@ final amberTheme = ThemeData(
     ),
     toggleButtonsTheme: ToggleButtonsThemeData(
         borderRadius: BorderRadius.circular(10),
-        borderColor: Color(0xFF5b3f36),
-        color: Color(0xFF5b3f36),
-        selectedBorderColor: Color(0xFF5b3f36),
-        selectedColor: Color(0xFF5b3f36),
-        fillColor: Color(0xFF896a60)),
+        borderColor: Color(0xFF8d6e63),
+        color: Color(0xFF341c13),
+        selectedBorderColor: Color(0xFF8d6e63),
+        selectedColor: Color(0xFFffffe4),
+        fillColor: Color(0xFF8d6e63)),
     sliderTheme: SliderThemeData(
-        activeTrackColor: Color(0xFF5b3f36),
-        inactiveTrackColor: Color(0xFF896a60),
+        activeTrackColor: Color(0xFF341c13),
+        inactiveTrackColor: Color(0xFFffe0b2),
         valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])));
 
 final darkTheme = ThemeData(

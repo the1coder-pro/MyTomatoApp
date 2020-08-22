@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -44,25 +45,14 @@ class TheMaterialApp extends StatelessWidget {
   }
 }
 
-class PreFrences extends InheritedWidget {
-  final bool isEnglish;
-
-  PreFrences({this.isEnglish, Widget child}) : super(child: child);
-
-  bool updateShouldNotify(PreFrences oldWidget) =>
-      oldWidget.isEnglish != isEnglish;
-
-  static PreFrences of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType() as PreFrences;
-}
-
 //Global Variables
 int repeatWords = 3;
 double toolBarHeight = 70;
 TextEditingController field = TextEditingController();
 var theContent = '';
 var listOfSentences;
-double textHeight = 1;
+double textHeight = 2;
+double studyTextFontSize = 40;
 
 //Theme Toggle Buttons and themeChanger Function
 void onThemeChanged(int value, ThemeNotifier themeNotifier) {
@@ -129,6 +119,42 @@ class _ThemeControllerState extends State<ThemeController> {
   }
 }
 
+class StudyFontSize extends StatefulWidget {
+  @override
+  _StudyFontSizeState createState() => _StudyFontSizeState();
+}
+
+class _StudyFontSizeState extends State<StudyFontSize> {
+  @override
+  Widget build(BuildContext context) {
+    final mylangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = mylangauge._isEnglish;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      textDirection: isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
+      children: [
+        Text(isLangaugeEnglish ? "Font Size" : "حجم الخط",
+            style:
+                TextStyle(color: Theme.of(context).textTheme.bodyText1.color)),
+        Slider(
+            inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
+            activeColor: Theme.of(context).sliderTheme.activeTrackColor,
+            value: studyTextFontSize,
+            min: 20,
+            max: 100,
+            divisions: 8,
+            label: '${studyTextFontSize.toInt()}',
+            onChanged: (double value) {
+              setState(() {
+                studyTextFontSize = value;
+              });
+            }),
+        Text("${studyTextFontSize.toInt()}")
+      ],
+    );
+  }
+}
+
 class WordRepeatSlider extends StatefulWidget {
   @override
   _WordRepeatSliderState createState() => _WordRepeatSliderState();
@@ -137,20 +163,113 @@ class WordRepeatSlider extends StatefulWidget {
 class _WordRepeatSliderState extends State<WordRepeatSlider> {
   @override
   Widget build(BuildContext context) {
-    return Slider(
-        inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
-        activeColor: Theme.of(context).sliderTheme.activeTrackColor,
-        value: repeatWords.toDouble(),
-        min: 3,
-        max: 10,
-        divisions: 9,
-        label: '$repeatWords',
-        onChanged: (double value) {
-          setState(() {
-            repeatWords = value.toInt();
-          });
-        });
+    final mylangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = mylangauge._isEnglish;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      textDirection: isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
+      children: [
+        Text(isLangaugeEnglish ? "Repeat Words" : "تكرار الكلمات",
+            style:
+                TextStyle(color: Theme.of(context).textTheme.bodyText1.color)),
+        Slider(
+            inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
+            activeColor: Theme.of(context).sliderTheme.activeTrackColor,
+            value: repeatWords.toDouble(),
+            min: 3,
+            max: 10,
+            divisions: 9,
+            label: '$repeatWords',
+            onChanged: (double value) {
+              setState(() {
+                repeatWords = value.toInt();
+              });
+            }),
+        Text("$repeatWords")
+      ],
+    );
   }
+}
+
+Future infoDialog(BuildContext context, langaugeValue) {
+  return showDialog(
+      context: context,
+      child: Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                      iconSize: 30,
+                      color: Theme.of(context).textTheme.bodyText1.color),
+                  SizedBox(width: 30),
+                  Text(
+                    langaugeValue ? "How To Use" : "كيفية الاستخدام",
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Theme.of(context).textTheme.bodyText1.color),
+                  ),
+                ],
+              ),
+              Text(
+                langaugeValue
+                    ? "to split the sentences, add one of the next spliters : "
+                    : "لتفصل الجُمل اضف إحد المفصلات التالية : ",
+                textDirection:
+                    langaugeValue ? TextDirection.ltr : TextDirection.rtl,
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyText1.color),
+              ),
+              Table(
+                border: TableBorder.all(style: BorderStyle.solid),
+                children: [
+                  TableRow(children: [
+                    Text(
+                      ",,,",
+                      style: TextStyle(
+                          fontSize: 40,
+                          color: Theme.of(context).textTheme.bodyText1.color),
+                      textAlign: TextAlign.center,
+                    )
+                  ]),
+                  TableRow(children: [
+                    Text(
+                      " *** ",
+                      style: TextStyle(
+                          fontSize: 40,
+                          color: Theme.of(context).textTheme.bodyText1.color),
+                      textAlign: TextAlign.center,
+                    )
+                  ]),
+                  TableRow(children: [
+                    Text(
+                      ",",
+                      style: TextStyle(
+                          fontSize: 40,
+                          color: Theme.of(context).textTheme.bodyText1.color),
+                      textAlign: TextAlign.center,
+                    )
+                  ]),
+                  TableRow(children: [
+                    Text(
+                      "،",
+                      style: TextStyle(
+                          fontSize: 40,
+                          color: Theme.of(context).textTheme.bodyText1.color),
+                      textAlign: TextAlign.center,
+                    )
+                  ])
+                ],
+              )
+            ],
+          ),
+        ),
+      ));
 }
 
 class TextHeightSlider extends StatefulWidget {
@@ -161,19 +280,31 @@ class TextHeightSlider extends StatefulWidget {
 class _TextHeightSliderState extends State<TextHeightSlider> {
   @override
   Widget build(BuildContext context) {
-    return Slider(
-        inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
-        activeColor: Theme.of(context).sliderTheme.activeTrackColor,
-        value: textHeight,
-        min: 1,
-        max: 5,
-        divisions: 4,
-        label: '${textHeight.toInt()}',
-        onChanged: (double value) {
-          setState(() {
-            textHeight = value;
-          });
-        });
+    final mylangauge = Provider.of<MyLangauge>(context);
+    bool isLangaugeEnglish = mylangauge._isEnglish;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      textDirection: isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
+      children: [
+        Text(isLangaugeEnglish ? "Text Height" : "حجم الاسطر",
+            style:
+                TextStyle(color: Theme.of(context).textTheme.bodyText1.color)),
+        Slider(
+            inactiveColor: Theme.of(context).sliderTheme.inactiveTrackColor,
+            activeColor: Theme.of(context).sliderTheme.activeTrackColor,
+            value: textHeight,
+            min: 2,
+            max: 5,
+            divisions: 4,
+            label: '${textHeight.toInt()}',
+            onChanged: (double value) {
+              setState(() {
+                textHeight = value;
+              });
+            }),
+        Text('$textHeight')
+      ],
+    );
   }
 }
 
@@ -212,7 +343,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 Text(isLangaugeEnglish ? "Arabic" : "عربي",
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color)),
-                // TODO Fixing the Switch
                 Switch(
                     value: mylangauge._isEnglish,
                     onChanged: (value) => mylangauge.langaugeSetter = value),
@@ -221,28 +351,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).textTheme.bodyText1.color)),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              textDirection:
-                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
-              children: [
-                Text(isLangaugeEnglish ? "Repeat Words" : "تكرار الكلمات",
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1.color)),
-                WordRepeatSlider()
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              textDirection:
-                  isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
-              children: [
-                Text(isLangaugeEnglish ? "Text Height" : "حجم الاسطر",
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1.color)),
-                TextHeightSlider()
-              ],
-            ),
+            WordRepeatSlider(),
+            StudyFontSize(),
+            TextHeightSlider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               textDirection:
@@ -387,7 +498,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 IconButton(
                   icon: Icon(Icons.info_outline),
-                  onPressed: () {}, //TODO we need a Info Page
+                  onPressed: () {
+                    infoDialog(context, isLangaugeEnglish);
+                  }, //TODO we need a Info Page
                   iconSize: 30,
                   color: Theme.of(context).textTheme.bodyText1.color,
                 ),
@@ -409,7 +522,7 @@ class _HomePageState extends State<HomePage> {
                 textDirection:
                     isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
                 controller: field,
-                maxLines: 18,
+                maxLines: 16,
                 style: TextStyle(
                     color: Theme.of(context).textTheme.bodyText1.color,
                     fontSize: 25),
@@ -504,7 +617,7 @@ class _StudyPageState extends State<StudyPage> {
     listOfWords = [];
     var words = listOfSentences[sentenceNumber].toString().split(" ");
     for (var word in words) {
-      if (word != " ") {
+      if (word != "") {
         listOfWords.add(word);
       }
     }
@@ -518,7 +631,8 @@ class _StudyPageState extends State<StudyPage> {
     studyText = listOfWords
         .join(" ")
         .toString()
-        .replaceFirst(listOfWords[hideWordNumber], '___');
+        .replaceFirst(listOfWords[hideWordNumber] == "***" ? listOfWords[hideWordNumber - 1] : listOfWords[hideWordNumber], '___');
+
 
     print("replacedString : $studyText");
   }
@@ -589,8 +703,9 @@ class _StudyPageState extends State<StudyPage> {
                 child: Text(
                   '$studyText',
                   style: TextStyle(
-                      fontSize: 40,
+                      fontSize: studyTextFontSize,
                       height: textHeight,
+                      fontFamily: "Amiri",
                       color: Theme.of(context).textTheme.bodyText1.color),
                   maxLines: 5,
                   textDirection: TextDirection.rtl,
@@ -631,7 +746,7 @@ class _StudyPageState extends State<StudyPage> {
                 SizedBox(width: 40),
                 IconButton(
                   icon: Icon(Icons.visibility),
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).textTheme.bodyText1.color,
                   splashColor: Theme.of(context).buttonColor,
                   tooltip: isLangaugeEnglish
                       ? "Show the hidden Word"
@@ -651,7 +766,8 @@ class _StudyPageState extends State<StudyPage> {
                   child: Text(
                 "$repeatWordsCounter",
                 style: TextStyle(
-                    fontSize: 90, color: Theme.of(context).primaryColor),
+                    fontSize: 90,
+                    color: Theme.of(context).textTheme.bodyText1.color),
               )),
             )
           ],
