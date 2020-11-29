@@ -70,58 +70,6 @@ void onThemeChanged(int value, ThemeNotifier themeNotifier) {
   }
 }
 
-// class ThemeController extends StatefulWidget {
-//   @override
-//   _ThemeControllerState createState() => _ThemeControllerState();
-// }
-
-// class _ThemeControllerState extends State<ThemeController> {
-//   final isSelected = <bool>[false, false, false];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
-//     final myLangauge = Provider.of<MyLangauge>(context);
-//     bool isLangaugeEnglish = myLangauge._isEnglish;
-//     return ToggleButtons(
-//       children: <Widget>[
-//         Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Text(isLangaugeEnglish ? "White" : "ابيض",
-//               textAlign: TextAlign.center),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Text(isLangaugeEnglish ? "Amber" : "بني",
-//               textAlign: TextAlign.center),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Text(isLangaugeEnglish ? "Black" : "اسود",
-//               textAlign: TextAlign.center),
-//         ),
-//       ],
-//       onPressed: (int index) {
-//         setState(() {
-//           for (int buttonIndex = 0;
-//               buttonIndex < isSelected.length;
-//               buttonIndex++) {
-//             if (buttonIndex == index) {
-//               isSelected[buttonIndex] = true;
-//             } else {
-//               isSelected[buttonIndex] = false;
-//             }
-//           }
-
-//           onThemeChanged(index, themeNotifier);
-//           print(index);
-//         });
-//       },
-//       isSelected: isSelected,
-//     );
-//   }
-// }
-
 class StudyFontSize extends StatefulWidget {
   @override
   _StudyFontSizeState createState() => _StudyFontSizeState();
