@@ -38,7 +38,8 @@ final lightTheme = ThemeData(
     sliderTheme: SliderThemeData(
         activeTrackColor: Colors.grey[800],
         inactiveTrackColor: Colors.grey,
-        valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])));
+        valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])),
+    toggleableActiveColor: Colors.grey[800]);
 
 final amberTheme = ThemeData(
     scaffoldBackgroundColor: Color(0xFFffffe4),
@@ -77,7 +78,8 @@ final amberTheme = ThemeData(
     sliderTheme: SliderThemeData(
         activeTrackColor: Color(0xFF341c13),
         inactiveTrackColor: Color(0xFFffe0b2),
-        valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])));
+        valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])),
+    toggleableActiveColor: Color(0xFF341c13));
 
 final darkTheme = ThemeData(
     scaffoldBackgroundColor: Color(0xFF000000),
@@ -117,7 +119,8 @@ final darkTheme = ThemeData(
     sliderTheme: SliderThemeData(
         activeTrackColor: Colors.grey[300],
         inactiveTrackColor: Colors.grey[700],
-        valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])));
+        valueIndicatorTextStyle: TextStyle(color: Colors.grey[50])),
+    toggleableActiveColor: Colors.grey[300]);
 
 class ThemeNotifier with ChangeNotifier {
   ThemeData _themeData;

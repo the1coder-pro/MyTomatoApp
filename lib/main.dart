@@ -39,6 +39,7 @@ class TheMaterialApp extends StatelessWidget {
         routes: {
           '/': (context) => HomePage(),
           '/study': (context) => StudyPage(),
+          '/settings': (context) => SettingsPage()
         },
       ),
     );
@@ -56,68 +57,70 @@ double studyTextFontSize = 40;
 
 //Theme Toggle Buttons and themeChanger Function
 void onThemeChanged(int value, ThemeNotifier themeNotifier) {
-  if (value == 0) {
-    themeNotifier.setTheme(lightTheme);
-  }
-  if (value == 1) {
-    themeNotifier.setTheme(amberTheme);
-  }
-  if (value == 2) {
-    themeNotifier.setTheme(darkTheme);
-  }
-}
-
-class ThemeController extends StatefulWidget {
-  @override
-  _ThemeControllerState createState() => _ThemeControllerState();
-}
-
-class _ThemeControllerState extends State<ThemeController> {
-  var isSelected = <bool>[false, false, false];
-
-  @override
-  Widget build(BuildContext context) {
-    ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
-    final myLangauge = Provider.of<MyLangauge>(context);
-    bool isLangaugeEnglish = myLangauge._isEnglish;
-    return ToggleButtons(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(isLangaugeEnglish ? "White" : "ابيض",
-              textAlign: TextAlign.center),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(isLangaugeEnglish ? "Amber" : "بني",
-              textAlign: TextAlign.center),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(isLangaugeEnglish ? "Black" : "اسود",
-              textAlign: TextAlign.center),
-        ),
-      ],
-      onPressed: (int index) {
-        setState(() {
-          for (int buttonIndex = 0;
-              buttonIndex < isSelected.length;
-              buttonIndex++) {
-            if (buttonIndex == index) {
-              isSelected[buttonIndex] = true;
-            } else {
-              isSelected[buttonIndex] = false;
-            }
-          }
-
-          onThemeChanged(index, themeNotifier);
-          print(index);
-        });
-      },
-      isSelected: isSelected,
-    );
+  switch (value) {
+    case 0:
+      themeNotifier.setTheme(lightTheme);
+      break;
+    case 1:
+      themeNotifier.setTheme(amberTheme);
+      break;
+    case 2:
+      themeNotifier.setTheme(darkTheme);
+      break;
   }
 }
+
+// class ThemeController extends StatefulWidget {
+//   @override
+//   _ThemeControllerState createState() => _ThemeControllerState();
+// }
+
+// class _ThemeControllerState extends State<ThemeController> {
+//   final isSelected = <bool>[false, false, false];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
+//     final myLangauge = Provider.of<MyLangauge>(context);
+//     bool isLangaugeEnglish = myLangauge._isEnglish;
+//     return ToggleButtons(
+//       children: <Widget>[
+//         Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Text(isLangaugeEnglish ? "White" : "ابيض",
+//               textAlign: TextAlign.center),
+//         ),
+//         Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Text(isLangaugeEnglish ? "Amber" : "بني",
+//               textAlign: TextAlign.center),
+//         ),
+//         Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Text(isLangaugeEnglish ? "Black" : "اسود",
+//               textAlign: TextAlign.center),
+//         ),
+//       ],
+//       onPressed: (int index) {
+//         setState(() {
+//           for (int buttonIndex = 0;
+//               buttonIndex < isSelected.length;
+//               buttonIndex++) {
+//             if (buttonIndex == index) {
+//               isSelected[buttonIndex] = true;
+//             } else {
+//               isSelected[buttonIndex] = false;
+//             }
+//           }
+
+//           onThemeChanged(index, themeNotifier);
+//           print(index);
+//         });
+//       },
+//       isSelected: isSelected,
+//     );
+//   }
+// }
 
 class StudyFontSize extends StatefulWidget {
   @override
@@ -125,6 +128,8 @@ class StudyFontSize extends StatefulWidget {
 }
 
 class _StudyFontSizeState extends State<StudyFontSize> {
+  double newValue;
+
   @override
   Widget build(BuildContext context) {
     final mylangauge = Provider.of<MyLangauge>(context);
@@ -143,13 +148,13 @@ class _StudyFontSizeState extends State<StudyFontSize> {
             min: 20,
             max: 100,
             divisions: 8,
-            label: '${studyTextFontSize.toInt()}',
+            label: "${studyTextFontSize.toInt()}",
             onChanged: (double value) {
               setState(() {
                 studyTextFontSize = value;
               });
             }),
-        Text("${studyTextFontSize.toInt()}")
+        SizedBox(child: Text("${studyTextFontSize.toInt()}"), width: 39),
       ],
     );
   }
@@ -185,7 +190,7 @@ class _WordRepeatSliderState extends State<WordRepeatSlider> {
                 repeatWords = value.toInt();
               });
             }),
-        Text("$repeatWords")
+        SizedBox(child: Text("$repeatWords"), width: 39)
       ],
     );
   }
@@ -302,7 +307,7 @@ class _TextHeightSliderState extends State<TextHeightSlider> {
                 textHeight = value;
               });
             }),
-        Text('$textHeight')
+        SizedBox(child: Text('$textHeight'), width: 39)
       ],
     );
   }
@@ -314,14 +319,17 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  @override
+  final isSelected1 = [false, false, false];
+  final isSelected3 = [false, false, false];
+
   Widget build(BuildContext context) {
+    ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context);
     final mylangauge = Provider.of<MyLangauge>(context);
     bool isLangaugeEnglish = mylangauge._isEnglish;
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.close),
+            icon: Icon(Icons.arrow_back),
             iconSize: 30,
             color: Theme.of(context).appBarTheme.iconTheme.color,
             onPressed: () => Navigator.pop(context),
@@ -335,10 +343,11 @@ class _SettingsPageState extends State<SettingsPage> {
           elevation: 0.5,
           toolbarHeight: 60,
         ),
-        body: ListView(
+        body: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
               children: [
                 Text(isLangaugeEnglish ? "Arabic" : "عربي",
                     style: TextStyle(
@@ -362,7 +371,43 @@ class _SettingsPageState extends State<SettingsPage> {
                 Text(isLangaugeEnglish ? "Theme " : "   المظهر",
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color)),
-                ThemeController()
+                ToggleButtons(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(isLangaugeEnglish ? "White" : "ابيض",
+                          textAlign: TextAlign.center),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(isLangaugeEnglish ? "Amber" : "بني",
+                          textAlign: TextAlign.center),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(isLangaugeEnglish ? "Black" : "اسود",
+                          textAlign: TextAlign.center),
+                    ),
+                  ],
+                  onPressed: (int index) {
+                    setState(() {
+                      for (int buttonIndex = 0;
+                          buttonIndex < isSelected1.length;
+                          buttonIndex++) {
+                        if (buttonIndex == index) {
+                          isSelected1[buttonIndex] = true;
+                          print(buttonIndex);
+                        } else {
+                          isSelected1[buttonIndex] = false;
+                        }
+                      }
+
+                      onThemeChanged(index, themeNotifier);
+                      print(index);
+                    });
+                  },
+                  isSelected: isSelected1,
+                ),
               ],
             )
           ],
@@ -446,20 +491,20 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Theme.of(context).appBarTheme.color,
           elevation: 0.5,
           toolbarHeight: toolBarHeight,
+          leading: IconButton(
+              icon: Icon(Icons.info_outline),
+              onPressed: () {
+                infoDialog(context, isLangaugeEnglish);
+              }, //TODO we need a Info Page
+              iconSize: 30,
+              color: Theme.of(context).appBarTheme.iconTheme.color),
           actions: [
             IconButton(
-              icon: Icon(Icons.settings),
-              iconSize: 30,
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return SettingsPage();
-                    });
-              },
-              color: Theme.of(context).appBarTheme.iconTheme.color,
-              padding: EdgeInsets.only(right: 20),
-            )
+                icon: Icon(Icons.settings),
+                iconSize: 30,
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+                color: Theme.of(context).appBarTheme.iconTheme.color,
+                padding: EdgeInsets.only(right: 20))
           ],
         ),
         floatingActionButton: Container(
@@ -496,14 +541,6 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: Icon(Icons.info_outline),
-                  onPressed: () {
-                    infoDialog(context, isLangaugeEnglish);
-                  }, //TODO we need a Info Page
-                  iconSize: 30,
-                  color: Theme.of(context).textTheme.bodyText1.color,
-                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 6.0),
                   child: Text(
@@ -519,6 +556,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
               child: TextFormField(
+                autofocus: false,
                 textDirection:
                     isLangaugeEnglish ? TextDirection.ltr : TextDirection.rtl,
                 controller: field,
@@ -628,11 +666,11 @@ class _StudyPageState extends State<StudyPage> {
     print("words in list : $listOfWords");
     print("words " + listOfWords.join(" ").toString());
     var hideWordNumber = Random().nextInt(listOfWords.length);
-    studyText = listOfWords
-        .join(" ")
-        .toString()
-        .replaceFirst(listOfWords[hideWordNumber] == "***" ? listOfWords[hideWordNumber - 1] : listOfWords[hideWordNumber], '___');
-
+    studyText = listOfWords.join(" ").toString().replaceFirst(
+        listOfWords[hideWordNumber] == "***"
+            ? listOfWords[hideWordNumber - 1]
+            : listOfWords[hideWordNumber],
+        '___');
 
     print("replacedString : $studyText");
   }
